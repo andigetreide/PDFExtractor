@@ -1,5 +1,11 @@
 package org.andiiiiiiiiii.pdfextractor;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -14,65 +20,38 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
-/**
- * This could be ported to a JavaFX Application, where you can specify a file or a set of files, from which to extract images and text
- * pictures might also be displayed or selected
- */
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-public class Main {
+public class Main extends Application {
 
-    private static final String OUTPUT_DIR = "tmp/";
-    private static final String INPUTFILE = "vo1.pdf";
+    @Override
+    public void start(Stage primaryStage)  {
+        try
+        {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
+            //Parent root = FXMLLoader.load(getClass().getResource("PDFExtractor.fxml"));  // this is the original line
 
-    public static void main(String[] args) throws Exception {
+            /*
+            TODO: still don't know why the .getClassLoader() is needed.  From stackoverflow:
+            This solved it for me, too. Anybody know why getClassLoader() makes a difference? – Phillip Feb 21 '16 at 19:03
+            If you are using an IDE, the problem may be that the IDE does not know that it needs to copy the .fxml file into the output directory alongside the class files during a build, which is where getClass().getResource() will look for it (it won't look in your source tree!). For instance, if you are using IntelliJ, you may need to add something like ";?.fxml;?.css" to your File|Settings|Compiler settings to tell it to copy the files during a build. See stackoverflow.com/questions/23421325/… for more information.
+            */
 
-        PDFTextStripper pdfStripper = new PDFTextStripper();
-
-        try (final PDDocument document = PDDocument.load(new File(INPUTFILE))) {
-
-            String filename;
-
-            PDPageTree list = document.getPages();
-            int countPics=0;
-            int countPages = 0;
-            for (PDPage page : list) {
-                countPages++;
-                //System.out.println("Page: " + countPages);
-
-                pdfStripper.setStartPage(countPages);
-                pdfStripper.setEndPage(countPages);
-                String parsedText = pdfStripper.getText(document);
-
-                filename = String.format(OUTPUT_DIR + "page%03d.txt", countPages);
-                FileWriter textOutput = new FileWriter(filename);
-                textOutput.write(parsedText);
-                textOutput.close();
-
-                PDResources pdResources = page.getResources();
-                for (COSName name : pdResources.getXObjectNames()) {
-                    PDXObject o = pdResources.getXObject(name);
-                    if (o instanceof PDImageXObject) {
-                        countPics++;
-                        //System.out.println("Picture " + countPics);
-                        PDImageXObject image = (PDImageXObject)o;
-                        filename = String.format(OUTPUT_DIR + "page%03d-pic%03d.png", countPages, countPics);
-
-                        ImageIO.write(image.getImage(), "png", new File(filename));
-                    }
-                }
-            }
-            pdfStripper.setStartPage(1);
-            pdfStripper.setEndPage(document.getNumberOfPages());
-            String parsedText = pdfStripper.getText(document);
-
-            FileWriter textOutput = new FileWriter(OUTPUT_DIR + "text.txt");
-            textOutput.write(parsedText);
-            textOutput.close();
-
-        } catch (IOException e){
-            System.err.println("Exception while trying to create pdf document - " + e);
+            primaryStage.setTitle("PDF Extractor");
+            primaryStage.setScene(new Scene(root /*, 300, 275*/));
+            primaryStage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.exit(-1);
         }
+
+        //PaneDemo.start(primaryStage);
+
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 
 }
-
