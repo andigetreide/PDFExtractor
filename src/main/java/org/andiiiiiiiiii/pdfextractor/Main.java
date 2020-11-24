@@ -6,9 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-import java.io.File;
-import java.nio.file.Path;
-
 
 public class Main extends Application {
 
@@ -46,16 +43,6 @@ public class Main extends Application {
             System.out.println("Started with arguments, arguments not implemented yet, therefore quitting... bye!");
             System.exit(-1);
         }
-
-        /*File test = new File("haha/testpath");
-
-        // System.out.println(test.getCanonicalPath());
-        System.out.println(test.getAbsolutePath());
-        System.out.println(test.getName());
-        System.out.println(test.getPath());
-        System.out.println(test.getParent());*/
-
-
 
         launch(args);
     }

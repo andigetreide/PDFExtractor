@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.andiiiiiiiiii.pdfextractor.Controller">
+  <children>
+    <MenuBar VBox.vgrow="NEVER">
+      <menus>
+        <Menu mnemonicParsing="false" text="File">
+          <items>
+            <MenuItem mnemonicParsing="false" onAction="#onNew" text="New" />
+            <MenuItem mnemonicParsing="false" onAction="#onOpen" text="Open…" />
+            <MenuItem mnemonicParsing="false" onAction="#onSaveAs" text="Save As…" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" onAction="#onQuit" text="Quit" />
+          </items>
+        </Menu>
+        <Menu mnemonicParsing="false" text="Help">
+          <items>
+                  <MenuItem mnemonicParsing="false" onAction="#onWhatIsThis" text="What is this tool for?" />
+            <MenuItem mnemonicParsing="false" onAction="#onAbout" text="About PDFExtractor" />
+          </items>
+        </Menu>
+      </menus>
+    </MenuBar>
+      <HBox>
+         <children>
+            <VBox prefWidth="450.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#onOpen" text="Open Input PDF" />
+                  <Label text="Input PDF file:" />
+                  <TextField fx:id="inputPDFFileText" />
+                  <Separator>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </Separator>
+                  <CheckBox fx:id="overwriteFilesCheckbox" mnemonicParsing="false" text="Overwrite existing files" />
+                  <CheckBox fx:id="exportImagesCheckbox" mnemonicParsing="false" selected="true" text="Export images" />
+                  <CheckBox fx:id="exportTextPerPageCheckbox" mnemonicParsing="false" selected="true" text="Export text into separate textfiles per page" />
+                  <CheckBox fx:id="exportSingleTextfileCheckbox" mnemonicParsing="false" selected="true" text="Export text into a single textfile" />
+                  <CheckBox fx:id="addPageNumbersCheckbox" mnemonicParsing="false" selected="true" text="Add page numbers to textfile" translateX="20.0" />
+                  <Separator>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </Separator>
+                  <Button mnemonicParsing="false" onAction="#onSaveAs" text="Set Output Directory" />
+                  <Label text="Output directory:" />
+                  <TextField fx:id="outputDirectoryText" />
+                  <Separator>
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </Separator>
+                  <Button mnemonicParsing="false" onAction="#onStart" prefWidth="99999.0" text="Start">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font></Button>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+            <VBox>
+               <children>
+                  <Label text="Output" />
+                  <ScrollPane>
+                    <content>
+                      <AnchorPane>
+                           <children>
+                              <TextArea fx:id="outputText" editable="false" />
+                           </children>
+                        </AnchorPane>
+                    </content>
+                  </ScrollPane>
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </HBox>
+  </children>
+</VBox>

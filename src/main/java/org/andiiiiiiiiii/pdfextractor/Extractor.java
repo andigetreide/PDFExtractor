@@ -8,6 +8,7 @@ import org.apache.pdfbox.pdmodel.PDResources;
 import org.apache.pdfbox.pdmodel.graphics.PDXObject;
 import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
+import org.jetbrains.annotations.NotNull;
 
 import javax.imageio.ImageIO;
 import java.io.File;
@@ -17,7 +18,7 @@ import java.io.PrintStream;
 
 /**
  * This class contains the logic for the PDF Extraction
- * it is independent of he user interface
+ * it is independent of the user interface
  */
 public class Extractor {
 
@@ -47,13 +48,12 @@ public class Extractor {
         this.addPageNumbers = addPageNumbers;
     }
 
-
-    public void extract(String inputfile, String outputdir) {
+    public void extract(@NotNull String inputfile, @NotNull String outputdir) {
         extract(inputfile, outputdir, System.out);
     }
 
-    public void extract(String inputfile, String outputdir, PrintStream out) {
-        extract(inputfile, outputdir, out, System.err);
+    public void extract(@NotNull String inputfile, @NotNull String outputdir, @NotNull PrintStream out) {
+        extract(inputfile, outputdir, out, out);
     }
 
     /**
@@ -76,13 +76,16 @@ public class Extractor {
     }
 
     /**
-     * TODO: Add @NotNull as Inputs cannot be null
+     *
      * @param inputfile PDF input file
      * @param outputdir output directory
-     * @param out: PrintStream to print output to (e.g. System.out)
+     * @param out PrintStream to print output to (e.g. System.out)
      */
-    public void extract(String inputfile, String outputdir, PrintStream out, PrintStream err) {
-
+    public void extract(
+            @NotNull String inputfile,
+            @NotNull String outputdir,
+            @NotNull PrintStream out,
+            @NotNull PrintStream err) {
 
         String inFileNoExt = new File(inputfile).getName();
         int dot = inFileNoExt.lastIndexOf('.');
@@ -105,12 +108,6 @@ public class Extractor {
             err.println("Output directory does not exist!");
             return;
         }
-
-
-
-        /*System.out.println(outputdir);
-        System.out.println(inFileNoExt);
-        if (true) return;*/
 
         // Don't know when this new PDFStripper() exception is really thrown
         // (API: "IOException - If there is an error loading the properties." But which properties??? )
