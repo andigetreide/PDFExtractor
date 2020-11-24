@@ -13,60 +13,223 @@ import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintStream;
 
+/**
+ * This class contains the logic for the PDF Extraction
+ * it is independent of he user interface
+ */
 public class Extractor {
 
-    private static final String OUTPUT_DIR = "tmp/";
-    private static final String INPUTFILE = "vo1.pdf";
+    private boolean overwriteFiles;
+    private boolean exportImages;
+    private boolean exportTextPerPage;
+    private boolean exportSingleTextfile;
+    private boolean addPageNumbers;
 
-    public static void extract(String[] args) throws Exception {
+    public void setOverwriteFiles(boolean overwriteFiles) {
+        this.overwriteFiles = overwriteFiles;
+    }
 
-        PDFTextStripper pdfStripper = new PDFTextStripper();
+    public void setExportImages(boolean exportImages) {
+        this.exportImages = exportImages;
+    }
 
-        try (final PDDocument document = PDDocument.load(new File(INPUTFILE))) {
+    public void setExportTextPerPage(boolean exportTextPerPage) {
+        this.exportTextPerPage = exportTextPerPage;
+    }
 
-            String filename;
+    public void setExportSingleTextfile(boolean exportSingleTextfile) {
+        this.exportSingleTextfile = exportSingleTextfile;
+    }
 
-            PDPageTree list = document.getPages();
-            int countPics=0;
-            int countPages = 0;
-            for (PDPage page : list) {
-                countPages++;
-                //System.out.println("Page: " + countPages);
+    public void setAddPageNumbers(boolean addPageNumbers) {
+        this.addPageNumbers = addPageNumbers;
+    }
 
-                pdfStripper.setStartPage(countPages);
-                pdfStripper.setEndPage(countPages);
-                String parsedText = pdfStripper.getText(document);
 
-                filename = String.format(OUTPUT_DIR + "page%03d.txt", countPages);
-                FileWriter textOutput = new FileWriter(filename);
-                textOutput.write(parsedText);
-                textOutput.close();
+    public void extract(String inputfile, String outputdir) {
+        extract(inputfile, outputdir, System.out);
+    }
 
-                PDResources pdResources = page.getResources();
-                for (COSName name : pdResources.getXObjectNames()) {
-                    PDXObject o = pdResources.getXObject(name);
-                    if (o instanceof PDImageXObject) {
-                        countPics++;
-                        //System.out.println("Picture " + countPics);
-                        PDImageXObject image = (PDImageXObject)o;
-                        filename = String.format(OUTPUT_DIR + "page%03d-pic%03d.png", countPages, countPics);
+    public void extract(String inputfile, String outputdir, PrintStream out) {
+        extract(inputfile, outputdir, out, System.err);
+    }
 
-                        ImageIO.write(image.getImage(), "png", new File(filename));
+    /**
+     * Extractor with no parameters sets default options
+     */
+    public Extractor() {
+        this.overwriteFiles = false;
+        this.exportImages = true;
+        this.exportTextPerPage = true;
+        this.exportSingleTextfile = true;
+        this.addPageNumbers = true;
+    }
+
+    public Extractor(boolean overwriteFiles, boolean exportImages, boolean exportTextPerPage, boolean exportSingleTextfile, boolean addPageNumbers) {
+        this.overwriteFiles = overwriteFiles;
+        this.exportImages = exportImages;
+        this.exportTextPerPage = exportTextPerPage;
+        this.exportSingleTextfile = exportSingleTextfile;
+        this.addPageNumbers = addPageNumbers;
+    }
+
+    /**
+     * TODO: Add @NotNull as Inputs cannot be null
+     * @param inputfile PDF input file
+     * @param outputdir output directory
+     * @param out: PrintStream to print output to (e.g. System.out)
+     */
+    public void extract(String inputfile, String outputdir, PrintStream out, PrintStream err) {
+
+
+        String inFileNoExt = new File(inputfile).getName();
+        int dot = inFileNoExt.lastIndexOf('.');
+        inFileNoExt =  (dot == -1) ? inFileNoExt : inFileNoExt.substring(0, dot);
+
+        if(inputfile.equals("")) {
+            err.println("Please specify PDF File");
+            return;
+        }
+
+        if (outputdir.equals("")) {
+            err.println("Please specify output directory");
+            return;
+        }
+
+        if (outputdir.charAt(outputdir.length()-1) != File.separatorChar)
+            outputdir = outputdir + File.separator;
+
+        if(!(new File(outputdir).exists())) {
+            err.println("Output directory does not exist!");
+            return;
+        }
+
+
+
+        /*System.out.println(outputdir);
+        System.out.println(inFileNoExt);
+        if (true) return;*/
+
+        // Don't know when this new PDFStripper() exception is really thrown
+        // (API: "IOException - If there is an error loading the properties." But which properties??? )
+        try {
+            PDFTextStripper pdfStripper = new PDFTextStripper();
+
+            try (final PDDocument document = PDDocument.load(new File(inputfile))) {
+
+                String filename;
+
+                PDPageTree list = document.getPages();
+                int countPics=0;
+                int countPages = 0;
+
+                out.println("Starting PDF Extraction...");
+
+                for (PDPage page : list) {
+                    countPages++;
+                    out.println("Scanning page " + countPages);
+
+                    if (exportTextPerPage) {
+                        pdfStripper.setStartPage(countPages);
+                        pdfStripper.setEndPage(countPages);
+                        String parsedText = pdfStripper.getText(document);
+
+                        out.println("Exporting text from page " + countPages);
+                        filename = String.format(outputdir + inFileNoExt + "_page%03d.txt", countPages);
+                        if (!overwriteFiles) {
+                            if (new File(filename).exists()) {
+                                err.println("File " + filename + " already exists!");
+                                return;
+                            }
+                        }
+                        try {
+                            FileWriter textOutput = new FileWriter(filename);
+                            textOutput.write(parsedText);
+                            textOutput.close();
+                        } catch (IOException e) {
+                            err.println("Cannot write file!");
+                            return;
+                        }
+                    }
+
+                    if (exportImages) {
+                        PDResources pdResources = page.getResources();
+                        for (COSName name : pdResources.getXObjectNames()) {
+                            try {
+                                // For some PDFs an exception is thrown here.... for whatever reason (e.g. for the System Safety Magazine)
+                                PDXObject o = pdResources.getXObject(name);
+                                if (o instanceof PDImageXObject) {
+                                    countPics++;
+                                    out.println("Exporting image " + countPics);
+                                    PDImageXObject image = (PDImageXObject) o;
+                                    filename = String.format(outputdir + inFileNoExt + "_page%03d-pic%03d.png", countPages, countPics);
+                                    if (!overwriteFiles) {
+                                        if (new File(filename).exists()) {
+                                            err.println("File " + filename + " already exists!");
+                                            return;
+                                        }
+                                    }
+                                    try {
+                                        ImageIO.write(image.getImage(), "png", new File(filename));
+                                    } catch (IOException e) {
+                                        err.println("File " + filename + " already exists!");
+                                        return;
+                                    }
+                                }
+                            }
+                            catch (IOException e) {
+                                err.println("Error while parsing PDF!");
+                                return;
+                            }
+                        }
                     }
                 }
+
+                if(exportSingleTextfile) {
+                    filename = outputdir + inFileNoExt + "_text.txt";
+                    out.println("Writing complete text into one file.");
+                    if (!overwriteFiles) {
+                        if (new File(filename).exists()) {
+                            err.println("File " + filename + " already exists!");
+                            return;
+                        }
+                    }
+
+                    try {
+                        FileWriter textOutput = new FileWriter(filename);
+
+                        for(int i = 1 ; i<=document.getNumberOfPages(); i++) {
+                            if(addPageNumbers) {
+                                textOutput.write("******* PDFExtractor - Page " + i + " *******\n");
+                            }
+                            pdfStripper.setStartPage(i);
+                            pdfStripper.setEndPage(i);
+                            String parsedText = pdfStripper.getText(document);
+                            textOutput.write(parsedText);
+                        }
+                        textOutput.close();
+                    } catch (IOException e) {
+                        err.println("Cannot write to output file " + filename);
+                        return;
+                    }
+
+
+
+                }
+
+            } catch (IOException e) {
+                err.println("Cannot open PDF document!");
+                return;
             }
-            pdfStripper.setStartPage(1);
-            pdfStripper.setEndPage(document.getNumberOfPages());
-            String parsedText = pdfStripper.getText(document);
 
-            FileWriter textOutput = new FileWriter(OUTPUT_DIR + "text.txt");
-            textOutput.write(parsedText);
-            textOutput.close();
-
-        } catch (IOException e){
-            System.err.println("Exception while trying to create pdf document - " + e);
+            out.println("Done!");
+        } catch(IOException e) {
+            err.println("Cannot create PDFTextStripper!");
         }
+
+
     }
 
 }
