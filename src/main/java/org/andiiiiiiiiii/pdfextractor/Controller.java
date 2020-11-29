@@ -7,6 +7,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import org.andiiiiiiiiii.pdfextractor.messageboxes.AboutBox;
 
 
 import java.io.*;
@@ -32,12 +34,19 @@ public class Controller implements Initializable {
     @FXML
     public CheckBox addPageNumbersCheckbox;
 
+    private Stage stage;
+
+    // don't forget to set the stage from the main progrma before using this controller!
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
     PrintStream outputTextStream;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        // TODO: add UTF-8 support
+        // TODO: add UTF-8 support, does Java internally work wth 16 bit characters?  UTF-16???
         OutputStream outputStream = new OutputStream() {
             @Override
             public void write(int i) /* throws IOException */ {
@@ -47,6 +56,7 @@ public class Controller implements Initializable {
         outputTextStream = new PrintStream(outputStream /*, true, StandardCharsets.UTF_8 */);
 
         addPageNumbersCheckbox.disableProperty().bind(exportSingleTextfileCheckbox.selectedProperty().not());
+
     }
 
 
@@ -66,14 +76,11 @@ public class Controller implements Initializable {
             fileChooser.setInitialDirectory(new File(new File(inputPDFFileText.getText()).getParent()));
         } catch(Exception e)  {}
 
-
-
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
                 new FileChooser.ExtensionFilter("All Files", "*.*"));
 
-        // TODO: instead of getscene.getwindow mainstage should be directly accessible here may be with an fx:id???
-        File selectedFile = fileChooser.showOpenDialog(inputPDFFileText.getScene().getWindow());
+        File selectedFile = fileChooser.showOpenDialog(stage);
 
         if (selectedFile != null) {
             inputPDFFileText.setText(selectedFile.getPath());
@@ -89,10 +96,7 @@ public class Controller implements Initializable {
             directoryChooser.setInitialDirectory(new File(new File(inputPDFFileText.getText()).getParent()));
         } catch (Exception e) {}
 
-        // TODO: instead of getscene.getwindow mainstage should be directly accessible here may be with an fx:id???
-        File selectedDirectory = directoryChooser.showDialog(inputPDFFileText.getScene().getWindow());
-
-        // File selectedDirectory = directoryChooser.showDialog(stage.getScene().getWindow());
+        File selectedDirectory = directoryChooser.showDialog(stage);
 
         if (selectedDirectory != null) {
             outputDirectoryText.setText(selectedDirectory.getPath());
@@ -106,17 +110,27 @@ public class Controller implements Initializable {
 
     @FXML
     private void onQuit() {
-
+        ((Stage) outputText.getScene().getWindow()).close();
     }
 
     @FXML
     private void onWhatIsThis() {
+        String text = "PDF Extractor automatically extracts\n" +
+                "all images and text from a PDF file.\n" +
+                "Hopefully, the user interface is rather self-explaining. :-)";
 
+        AboutBox aboutBox = new AboutBox();
+        aboutBox.show(text);
     }
 
     @FXML
     private void onAbout() {
+        String text = "PDF Extractor 0.1\n" +
+            "contains some OSS...\n" +
+            "By Andi";
 
+        AboutBox aboutBox = new AboutBox();
+        aboutBox.show(text);
     }
 
     @FXML

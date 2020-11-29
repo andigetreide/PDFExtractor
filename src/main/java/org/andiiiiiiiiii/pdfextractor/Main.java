@@ -13,7 +13,6 @@ public class Main extends Application {
     public void start(Stage primaryStage)  {
         try
         {
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
             /*
             This was the original line, but getClass().getResource("PDFExtractor.fxml") returns null for unknown reasons:
             Parent root = FXMLLoader.load(getClass().getResource("PDFExtractor.fxml"));
@@ -21,6 +20,10 @@ public class Main extends Application {
             This solved it for me, too. Anybody know why getClassLoader() makes a difference? – Phillip Feb 21 '16 at 19:03
             If you are using an IDE, the problem may be that the IDE does not know that it needs to copy the .fxml file into the output directory alongside the class files during a build, which is where getClass().getResource() will look for it (it won't look in your source tree!). For instance, if you are using IntelliJ, you may need to add something like ";?.fxml;?.css" to your File|Settings|Compiler settings to tell it to copy the files during a build. See stackoverflow.com/questions/23421325/… for more information.
             */
+            // Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
+            Parent root = (Parent)loader.load();
+            ((Controller)loader.getController()).setStage(primaryStage);
 
             primaryStage.setTitle("PDF Extractor");
             primaryStage.setScene(new Scene(root /*, 300, 275*/));
@@ -34,9 +37,7 @@ public class Main extends Application {
     }
 
     // TODO: Command line parameters not supported yet
-    // TODO: About Box, What is this tool for?
-    // TODO: Quit menu, remove preferences
-    // TODO: Scroll pane, make output text area much bigger, introduce line breaks (i.e. autowrap)
+    // TODO: Scroll pane, make output text area much bigger and more responsive, introduce line breaks (i.e. autowrap)
     public static void main(String[] args) {
 
         if (args.length > 0) {
