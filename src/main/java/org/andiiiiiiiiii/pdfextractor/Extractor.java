@@ -1,5 +1,7 @@
 package org.andiiiiiiiiii.pdfextractor;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import org.apache.pdfbox.cos.COSName;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -27,6 +29,27 @@ public class Extractor {
     private boolean exportTextPerPage;
     private boolean exportSingleTextfile;
     private boolean addPageNumbers;
+
+    private DoubleProperty progress = new SimpleDoubleProperty(0);
+
+    /*public final double getStand() {
+        if (stand != null)
+            return stand.get();
+        return 0;
+    }*/
+
+    /*public final void setStand(double hoehe) {
+        this.standProperty().set(hoehe);
+    }*/
+
+    // Property handling taken from https://javabeginners.de/Frameworks/JavaFX/Properties_und_Binding.php
+    public final DoubleProperty progressProperty() {
+        /*if (progress == null) {
+            progress = new SimpleDoubleProperty(0);
+        }*/
+        return progress;
+    }
+
 
     public void setOverwriteFiles(boolean overwriteFiles) {
         this.overwriteFiles = overwriteFiles;
@@ -126,6 +149,11 @@ public class Extractor {
 
                 for (PDPage page : list) {
                     countPages++;
+
+                    this.progressProperty().set((double) countPages / (double) document.getNumberOfPages());
+                    // can the following be used instead?
+                    // progress.set((double) countPages / (double) document.getNumberOfPages());
+
                     out.println("Scanning page " + countPages);
 
                     if (exportTextPerPage) {

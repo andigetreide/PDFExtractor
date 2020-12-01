@@ -1,4 +1,4 @@
-# Extract Images from PDF Files
+# Extract Images and text from PDF Files
 
 This is the lib used:
 * https://pdfbox.apache.org/

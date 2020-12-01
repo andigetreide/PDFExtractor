@@ -53,12 +53,18 @@ public class Controller implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         // TODO: add UTF-8 support, does Java internally work with 16 bit characters?  UTF-16???
+        // from https://stackoverflow.com/questions/36638617/javafx-textarea-update-immediately
         OutputStream outputStream = new OutputStream() {
             @Override
             public void write(int i) /* throws IOException */ {
-                Platform.runLater(() -> outputText.appendText(String.format("%c", (char) i)));
+                if (Platform.isFxApplicationThread()) {
+                    outputText.appendText(String.format("%c", (char) i));
+                } else {
+                    Platform.runLater(() -> outputText.appendText(String.format("%c", (char) i)));
+                }
             }
         };
+
         outputTextStream = new PrintStream(outputStream /*, true, StandardCharsets.UTF_8 */);
 
         addPageNumbersCheckbox.disableProperty().bind(exportSingleTextfileCheckbox.selectedProperty().not());
@@ -117,11 +123,6 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    private void onPreferences() {
-
-    }
-
-    @FXML
     private void onQuit() {
         ((Stage) outputText.getScene().getWindow()).close();
     }
@@ -157,14 +158,19 @@ public class Controller implements Initializable {
                 addPageNumbersCheckbox.isSelected()
         );
 
-        Thread thread = new Thread(() ->
+        Thread thread = new Thread(() -> {
+            progressBar.setDisable(false);
+            progressBar.progressProperty().bind(extractor.progressProperty());
             extractor.extract(
                     inputPDFFileText.getText(),
                     outputDirectoryText.getText(),
                     outputTextStream,
                     outputTextStream
-            )
-        );
+            );
+            progressBar.progressProperty().unbind();
+            progressBar.progressProperty().set(0);
+            progressBar.setDisable(true);
+        });
         thread.start();
 
     }

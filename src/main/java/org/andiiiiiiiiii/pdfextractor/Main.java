@@ -22,7 +22,7 @@ public class Main extends Application {
             */
             // Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("PDFExtractor.fxml"));
-            Parent root = (Parent)loader.load();
+            Parent root = loader.load();
             ((Controller)loader.getController()).setStage(primaryStage);
 
             primaryStage.setTitle("PDF Extractor");
