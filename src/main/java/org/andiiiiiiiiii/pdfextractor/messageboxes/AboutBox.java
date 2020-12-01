@@ -15,12 +15,12 @@ public class AboutBox {
         Stage stage= new Stage();
         stage.setWidth(350);
         Button button = new Button("OK");
+
         Label label = new Label();
-
-        button.setOnAction(e -> stage.close());
-
         label.setText(text);
         label.setAlignment(Pos.CENTER);
+
+        button.setOnAction(e -> stage.close());
 
         VBox root = new VBox();
         root.setPadding(new Insets(10, 10, 10, 10));

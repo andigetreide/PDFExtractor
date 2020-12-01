@@ -115,12 +115,12 @@ public class Extractor {
         inFileNoExt =  (dot == -1) ? inFileNoExt : inFileNoExt.substring(0, dot);
 
         if(inputfile.equals("")) {
-            err.println("Please specify PDF File");
+            err.println("--- Please specify PDF File");
             return;
         }
 
         if (outputdir.equals("")) {
-            err.println("Please specify output directory");
+            err.println("--- Please specify output directory");
             return;
         }
 
@@ -128,7 +128,7 @@ public class Extractor {
             outputdir = outputdir + File.separator;
 
         if(!(new File(outputdir).exists())) {
-            err.println("Output directory does not exist!");
+            err.println("--- Output directory does not exist!");
             return;
         }
 
@@ -151,7 +151,7 @@ public class Extractor {
                     countPages++;
 
                     this.progressProperty().set((double) countPages / (double) document.getNumberOfPages());
-                    // can the following be used instead?
+                    // can the following be used instead? I don't think so...
                     // progress.set((double) countPages / (double) document.getNumberOfPages());
 
                     out.println("Scanning page " + countPages);
@@ -174,7 +174,7 @@ public class Extractor {
                             textOutput.write(parsedText);
                             textOutput.close();
                         } catch (IOException e) {
-                            err.println("Cannot write file!");
+                            err.println("--- Cannot write file!");
                             return;
                         }
                     }
@@ -199,13 +199,13 @@ public class Extractor {
                                     try {
                                         ImageIO.write(image.getImage(), "png", new File(filename));
                                     } catch (IOException e) {
-                                        err.println("File " + filename + " already exists!");
+                                        err.println("--- File " + filename + " already exists!");
                                         return;
                                     }
                                 }
                             }
                             catch (IOException e) {
-                                err.println("Error while parsing PDF!");
+                                err.println("--- Error while parsing PDF!");
                                 return;
                             }
                         }
@@ -217,7 +217,7 @@ public class Extractor {
                     out.println("Writing complete text into one file.");
                     if (!overwriteFiles) {
                         if (new File(filename).exists()) {
-                            err.println("File " + filename + " already exists!");
+                            err.println("--- File " + filename + " already exists!");
                             return;
                         }
                     }
@@ -236,7 +236,7 @@ public class Extractor {
                         }
                         textOutput.close();
                     } catch (IOException e) {
-                        err.println("Cannot write to output file " + filename);
+                        err.println("--- Cannot write to output file " + filename);
                         return;
                     }
 
@@ -245,13 +245,13 @@ public class Extractor {
                 }
 
             } catch (IOException e) {
-                err.println("Cannot open PDF document!");
+                err.println("--- Cannot open PDF document!");
                 return;
             }
 
             out.println("Done!");
         } catch(IOException e) {
-            err.println("Cannot create PDFTextStripper!");
+            err.println("--- Cannot create PDFTextStripper!");
         }
 
 

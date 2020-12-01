@@ -42,7 +42,7 @@ public class Controller implements Initializable {
 
     private Stage stage;
 
-    // don't forget to set the stage from the main progrma before using this controller!
+    // don't forget to set the stage from the main program before using this controller!
     public void setStage(Stage stage) {
         this.stage = stage;
     }
