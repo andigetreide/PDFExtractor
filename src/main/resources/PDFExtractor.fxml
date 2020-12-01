@@ -7,13 +7,13 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -40,7 +40,7 @@
     </MenuBar>
       <HBox>
          <children>
-            <VBox prefWidth="450.0">
+            <VBox minWidth="300.0" prefWidth="500.0" spacing="5.0">
                <children>
                   <Button mnemonicParsing="false" onAction="#onOpen" text="Open Input PDF" />
                   <Label text="Input PDF file:" />
@@ -68,6 +68,7 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </Separator>
+                  <Region prefHeight="3000.0" />
                   <Button mnemonicParsing="false" onAction="#onStart" prefWidth="99999.0" text="Start">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -77,18 +78,15 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding>
             </VBox>
-            <VBox>
+            <VBox minWidth="250.0" spacing="5.0">
                <children>
                   <Label text="Output" />
-                  <ScrollPane>
-                    <content>
-                      <AnchorPane>
-                           <children>
-                              <TextArea fx:id="outputText" editable="false" />
-                           </children>
-                        </AnchorPane>
-                    </content>
-                  </ScrollPane>
+                  <TextArea fx:id="outputText" editable="false" prefColumnCount="200" prefRowCount="200" wrapText="true" />
+                  <ProgressBar fx:id="progressBar" minHeight="35.0" prefWidth="3840.0" progress="0.0">
+                     <padding>
+                        <Insets bottom="10.0" top="10.0" />
+                     </padding>
+                  </ProgressBar>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

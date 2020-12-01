@@ -1,8 +1,12 @@
 package org.andiiiiiiiiii.pdfextractor;
 
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.stage.DirectoryChooser;
@@ -33,6 +37,8 @@ public class Controller implements Initializable {
     public CheckBox exportSingleTextfileCheckbox;
     @FXML
     public CheckBox addPageNumbersCheckbox;
+    @FXML
+    public ProgressBar progressBar;
 
     private Stage stage;
 
@@ -46,17 +52,26 @@ public class Controller implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        // TODO: add UTF-8 support, does Java internally work wth 16 bit characters?  UTF-16???
+        // TODO: add UTF-8 support, does Java internally work with 16 bit characters?  UTF-16???
         OutputStream outputStream = new OutputStream() {
             @Override
             public void write(int i) /* throws IOException */ {
-                outputText.appendText(String.format("%c", (char) i));
+                Platform.runLater(() -> outputText.appendText(String.format("%c", (char) i)));
             }
         };
         outputTextStream = new PrintStream(outputStream /*, true, StandardCharsets.UTF_8 */);
 
         addPageNumbersCheckbox.disableProperty().bind(exportSingleTextfileCheckbox.selectedProperty().not());
 
+        // from https://stackoverflow.com/questions/17799160/javafx-textarea-and-autoscroll
+        outputText.textProperty().addListener(new ChangeListener<Object>() {
+            @Override
+            public void changed(ObservableValue<?> observable, Object oldValue,
+                                Object newValue) {
+                outputText.setScrollTop(Double.MAX_VALUE); //this will scroll to the bottom
+                //use Double.MIN_VALUE to scroll to the top
+            }
+        });
     }
 
 
@@ -72,9 +87,8 @@ public class Controller implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open PDF File");
 
-        try {
+        if (new File(inputPDFFileText.getText()).getParent() != null)
             fileChooser.setInitialDirectory(new File(new File(inputPDFFileText.getText()).getParent()));
-        } catch(Exception e)  {}
 
         fileChooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("PDF Files", "*.pdf"),
@@ -92,9 +106,8 @@ public class Controller implements Initializable {
         DirectoryChooser directoryChooser = new DirectoryChooser();
         directoryChooser.setTitle("Set target directory");
 
-        try {
+        if (new File(inputPDFFileText.getText()).getParent() != null)
             directoryChooser.setInitialDirectory(new File(new File(inputPDFFileText.getText()).getParent()));
-        } catch (Exception e) {}
 
         File selectedDirectory = directoryChooser.showDialog(stage);
 
@@ -135,9 +148,6 @@ public class Controller implements Initializable {
 
     @FXML
     private void onStart() {
-        // outputText.appendText("Hi");
-        // outputTextStream.print("Helloäüé");
-        // outputTextStream.print("Hello");
 
         Extractor extractor = new Extractor(
                 overwriteFilesCheckbox.isSelected(),
@@ -147,12 +157,15 @@ public class Controller implements Initializable {
                 addPageNumbersCheckbox.isSelected()
         );
 
-        extractor.extract(
-                inputPDFFileText.getText(),
-                outputDirectoryText.getText(),
-                outputTextStream,
-                outputTextStream
+        Thread thread = new Thread(() ->
+            extractor.extract(
+                    inputPDFFileText.getText(),
+                    outputDirectoryText.getText(),
+                    outputTextStream,
+                    outputTextStream
+            )
         );
+        thread.start();
 
     }
 

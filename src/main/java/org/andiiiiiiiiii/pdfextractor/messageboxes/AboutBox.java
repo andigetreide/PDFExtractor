@@ -1,5 +1,6 @@
 package org.andiiiiiiiiii.pdfextractor.messageboxes;
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.layout.VBox;
@@ -22,6 +23,8 @@ public class AboutBox {
         label.setAlignment(Pos.CENTER);
 
         VBox root = new VBox();
+        root.setPadding(new Insets(10, 10, 10, 10));
+        root.setSpacing(10);
         root.setAlignment(Pos.CENTER);
         root.getChildren().addAll(label, button);
 
@@ -29,7 +32,7 @@ public class AboutBox {
         stage.setScene(scene);
         stage.initModality(Modality.APPLICATION_MODAL);
 
-        stage.show();
+        stage.showAndWait();
     }
 
 
