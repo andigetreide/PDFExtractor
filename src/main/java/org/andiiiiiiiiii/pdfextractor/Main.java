@@ -37,7 +37,6 @@ public class Main extends Application {
     }
 
     // TODO: Command line parameters not supported yet
-    // TODO: Scroll pane, make output text area much bigger and more responsive, introduce line breaks (i.e. autowrap)
     public static void main(String[] args) {
 
         if (args.length > 0) {

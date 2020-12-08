@@ -142,7 +142,7 @@ public class Extractor {
                 String filename;
 
                 PDPageTree list = document.getPages();
-                int countPics=0;
+                int countPics = 0;
                 int countPages = 0;
 
                 out.println("Starting PDF Extraction...");
@@ -165,7 +165,7 @@ public class Extractor {
                         filename = String.format(outputdir + inFileNoExt + "_page%03d.txt", countPages);
                         if (!overwriteFiles) {
                             if (new File(filename).exists()) {
-                                err.println("File " + filename + " already exists!");
+                                err.println("--- File " + filename + " already exists!");
                                 return;
                             }
                         }
@@ -197,10 +197,12 @@ public class Extractor {
                                         }
                                     }
                                     try {
+                                        // unfortunately, here a runtime exception is sometimes thrown, see
+                                        // https://issues.apache.org/jira/browse/PDFBOX-5036
+                                        // fixed by using the TwelveMonkeys Library: https://github.com/haraldk/TwelveMonkeys/
                                         ImageIO.write(image.getImage(), "png", new File(filename));
                                     } catch (IOException e) {
                                         err.println("--- File " + filename + " already exists!");
-                                        return;
                                     }
                                 }
                             }
