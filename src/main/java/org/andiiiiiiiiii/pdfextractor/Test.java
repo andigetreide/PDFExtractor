@@ -11,6 +11,7 @@ import java.io.IOException;
 
 // https://issues.apache.org/jira/browse/PDFBOX-5036 created
 // let's see what happens
+// using the twelvemonkeys library solves the problem! :-)
 
 public class Test {
     public static void main(String[] args) {
@@ -22,7 +23,7 @@ public class Test {
                 PDXObject o = pdRes.getXObject(name);
                 if (o instanceof PDImageXObject) {
                     PDImageXObject img = (PDImageXObject) o;
-                    img.getImage();  // This throws an java.lang.IllegalArgumentException (runtime exception) - bug in PDFBOX
+                    img.getImage();  // This throws an java.lang.IllegalArgumentException (runtime exception) - bug in PDFBOX???
                 }
             }
         } catch(IOException e) {

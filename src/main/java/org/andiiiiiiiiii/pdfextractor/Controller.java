@@ -60,6 +60,7 @@ public class Controller implements Initializable {
                 if (Platform.isFxApplicationThread()) {
                     outputText.appendText(String.format("%c", (char) i));
                 } else {
+
                     Platform.runLater(() -> outputText.appendText(String.format("%c", (char) i)));
                 }
             }
@@ -78,6 +79,34 @@ public class Controller implements Initializable {
                 //use Double.MIN_VALUE to scroll to the top
             }
         });
+    }
+
+    @FXML
+    private void onStart() {
+
+        Extractor extractor = new Extractor(
+                overwriteFilesCheckbox.isSelected(),
+                exportImagesCheckbox.isSelected(),
+                exportTextPerPageCheckbox.isSelected(),
+                exportSingleTextfileCheckbox.isSelected(),
+                addPageNumbersCheckbox.isSelected()
+        );
+
+        Thread thread = new Thread(() -> {
+            progressBar.setDisable(false);
+            progressBar.progressProperty().bind(extractor.progressProperty());
+            extractor.extract(
+                    inputPDFFileText.getText(),
+                    outputDirectoryText.getText(),
+                    outputTextStream,
+                    outputTextStream
+            );
+            progressBar.progressProperty().unbind();
+            progressBar.progressProperty().set(0);
+            progressBar.setDisable(true);
+        });
+        thread.start();
+
     }
 
 
@@ -147,32 +176,5 @@ public class Controller implements Initializable {
         aboutBox.show(text);
     }
 
-    @FXML
-    private void onStart() {
-
-        Extractor extractor = new Extractor(
-                overwriteFilesCheckbox.isSelected(),
-                exportImagesCheckbox.isSelected(),
-                exportTextPerPageCheckbox.isSelected(),
-                exportSingleTextfileCheckbox.isSelected(),
-                addPageNumbersCheckbox.isSelected()
-        );
-
-        Thread thread = new Thread(() -> {
-            progressBar.setDisable(false);
-            progressBar.progressProperty().bind(extractor.progressProperty());
-            extractor.extract(
-                    inputPDFFileText.getText(),
-                    outputDirectoryText.getText(),
-                    outputTextStream,
-                    outputTextStream
-            );
-            progressBar.progressProperty().unbind();
-            progressBar.progressProperty().set(0);
-            progressBar.setDisable(true);
-        });
-        thread.start();
-
-    }
 
 }
