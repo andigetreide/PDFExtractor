@@ -17,6 +17,7 @@ import org.andiiiiiiiiii.pdfextractor.messageboxes.AboutBox;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 public class Controller implements Initializable {
@@ -168,9 +169,23 @@ public class Controller implements Initializable {
 
     @FXML
     private void onAbout() {
-        String text = "PDF Extractor 0.1\n" +
-            "contains some OSS...\n" +
-            "By Andi";
+
+        String javaVersion = System.getProperty("java.version");
+        String javafxVersion = System.getProperty("javafx.version");
+        String version;
+
+        final Properties properties = new Properties();
+        //properties.load(this.getClassLoader().getResourceAsStream("project.properties"));
+
+        try {
+            properties.load(this.getClass().getClassLoader().getResourceAsStream(".properties"));
+            version = properties.getProperty("pdfextractor.version");
+        } catch (IOException e) {
+            version = "unknown";
+        }
+
+        String text = "PDF Extractor " + version + "\n" +
+                "JavaFX " + javafxVersion + ", running on Java " + javaVersion + ".";
 
         AboutBox aboutBox = new AboutBox();
         aboutBox.show(text);

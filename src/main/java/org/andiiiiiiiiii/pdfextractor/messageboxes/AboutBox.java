@@ -30,6 +30,7 @@ public class AboutBox {
 
         Scene scene = new Scene(root);
         stage.setScene(scene);
+        stage.setTitle("About");
         stage.initModality(Modality.APPLICATION_MODAL);
 
         stage.showAndWait();
