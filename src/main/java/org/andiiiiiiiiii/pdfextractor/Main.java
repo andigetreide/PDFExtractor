@@ -37,7 +37,7 @@ public class Main extends Application {
     }
 
     // TODO: Command line parameters not supported yet
-    public static void main(String[] args) {
+    public static void realMain(String[] args) {
 
         if (args.length > 0) {
             System.out.println("Started with arguments, arguments not implemented yet, therefore quitting... bye!");

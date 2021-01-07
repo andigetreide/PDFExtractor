@@ -6,7 +6,7 @@
 
     <groupId>org.andiiiiiiiiii</groupId>
     <artifactId>PDFExtractor</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1.0-SNAPSHOT</version>
     <name>PDFExtractor</name>
     <description>Extracts pictures and text from a PDF file</description>
 
@@ -49,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.andiiiiiiiiii.pdfextractor.Main</mainClass>
+                            <mainClass>org.andiiiiiiiiii.pdfextractor.FakeMain</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
